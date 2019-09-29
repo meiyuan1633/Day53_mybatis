@@ -1,0 +1,61 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wei.mapper.IStudentMapper">
+    <!--
+        resultMap:当查询出来的数据库字段与实体类属性名不一致的时候，使用resultMap
+
+        映射器
+             id 为映射器的名字
+             type 为映射类型
+    -->
+   <resultMap id="FirstResultMap" type="Student">
+       <!--
+            id标签    为映射的主键
+            property    对应的是实体类的属性
+            column      对应的是数据库的字段名
+       -->
+       <id property="id" column="id"/>
+       <!--
+            result标签       为映射的普通属性
+       -->
+       <result property="isDelete" column="is_delete"/>
+       <!--
+            可以指定对应的构造方法
+             <constructor>
+           <idArg column=""></idArg>
+           <arg column=""></arg>
+           <arg column=""></arg>
+            </constructor>
+
+       -->
+
+   </resultMap>
+
+    <!--
+         keyProperty ：返回主键，使用stu的id去接收
+         useGeneratedKeys：是否返回主键
+         #{}：类似于占位符，可以通过Mapper接口方法中的@Param的value元素获取到对应的参数
+    -->
+    <insert id="addStudent" keyProperty="stu.id" useGeneratedKeys="true">
+        insert into student (username,password)values (#{stu.username},#{stu.password});
+    </insert>
+    <insert id="add">
+        insert into student(username, password) values (#{stu1.username},#{stu1.password});
+    </insert>
+
+    <update id="update">
+        update student s set s.username=#{stu2.username},s.password=#{stu2.password} where s.id=#{stu2.id};
+    </update>
+    <update id="delete">
+        update student s set s.is_delete=0 where s.id=#{id1};
+    </update>
+    <select id="findById" resultType="Student">
+        select s.id,s.username,s.password from student s where s.id=#{id2} and s.is_delete=1;
+    </select>
+    <select id="findAll" resultMap="FirstResultMap">
+        select s.id,s.username,s.password,s.is_delete from student s where s.is_delete=1;
+    </select>
+    
+</mapper>

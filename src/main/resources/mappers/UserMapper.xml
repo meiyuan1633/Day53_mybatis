@@ -1,0 +1,27 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wei.mapper.IUserMapper">
+    <resultMap id="userCartMap" type="User">
+        <id property="uId" column="u_id"/>
+        <result property="username" column="username"/>
+        <result property="password" column="password"/>
+        <result property="isDelete" column="is_delete"/>
+
+        <!--
+            建立 -对多的关系
+            property对应的是集合的属性名
+            ofType为集合的泛型类型
+            column为外键对应的字段
+            select级联查询的接口方法
+
+
+        -->
+        <collection property="carts"
+                    ofType="Cart"
+                    column="u_id"
+                    select="com.wei.mapper.ICartMapper.findCartByUid"/>
+    </resultMap>
+    <select id="findCartByUid" resultMap="userCartMap">
+        select * from  user where u_id=#{uId} and is_delete=1;
+    </select>
+</mapper>

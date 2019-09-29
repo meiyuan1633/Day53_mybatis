@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd">
+
+    <!--通过spring加载Properties文件-->
+    <context:property-placeholder location="classpath:db.properties"/>
+
+    <!--加载mapper.xml配置文件，并且初始化数据库连接池-->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="mapperLocations" value="classpath:mappers/*.xml"/>
+        <!--初始化数据库连接池-->
+        <property name="dataSource" ref="dataSource"/>
+        <!--实体类的别名-->
+        <property name="typeAliasesPackage" value="com.wei.entity"/>
+    </bean>
+    <!--Mapper接口所在包名，Spring自动扫描-->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="com.wei.mapper"/>
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
+    </bean>
+
+    <!--配置druid连接池-->
+    <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+        <property name="url" value="${db.url}"/>
+        <property name="username" value="${db.username}"/>
+        <property name="password" value="${db.password}"/>
+
+        <property name="filters" value="stat"/>
+        <!--初始化最大连接数-->
+        <property name="maxActive" value="20"/>
+        <!--初始化大小-->
+        <property name="initialSize" value="1"/>
+        <!--最大等待时间-->
+        <property name="maxWait" value="60000"/>
+        <!--初始化最小连接数-->
+        <property name="minIdle" value="1"/>
+
+        <!--配置间隔多久才进行一次检测，检测需要关闭的空闲连接 单位毫秒-->
+        <property name="timeBetweenEvictionRunsMillis" value="60000"/>
+        <!--配置一个连接在池中最小生存的时间，单位是毫秒-->
+        <property name="minEvictableIdleTimeMillis" value="300000"/>
+
+        <property name="testWhileIdle" value="true"/>
+        <property name="testOnBorrow" value="false"/>
+        <property name="testOnReturn" value="false"/>
+
+        <!--打开PSCache，并且指定每个连接上PSCache的大小-->
+        <property name="poolPreparedStatements" value="true"/>
+        <property name="maxPoolPreparedStatementPerConnectionSize" value="20"/>
+        <property name="asyncInit" value="true"/>
+    </bean>
+</beans>
